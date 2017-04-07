@@ -1,0 +1,105 @@
+version: '2'
+
+services:
+
+  app1_a:
+    build: .
+    network_mode: "host"
+    command: -addr=:8501
+
+  app1_b:
+    build: .
+    network_mode: "host"
+    command: -addr=:8502 -latency=1s -success-rate=0.8
+
+  app2_a:
+    build: .
+    network_mode: "host"
+    command: -addr=:8503
+
+  app2_b:
+    build: .
+    network_mode: "host"
+    command: -addr=:8504 -latency=2s -success-rate=0.4
+
+  # route 90% of traffic to app1, 10% to app2
+  linkerd1:
+    image: buoyantio/linkerd:influx-test # TODO: update
+    network_mode: "host"
+    ports:
+    - 4140:4140
+    - 9990:9990
+    volumes:
+    - ./linkerd1.yml:/io.buoyant/linkerd/config.yml:ro
+    - ./disco:/disco:ro
+    command:
+    - "/io.buoyant/linkerd/config.yml"
+
+  # route 25% of traffic to app1, 75% to app2
+  linkerd2:
+    image: buoyantio/linkerd:influx-test # TODO: update
+    network_mode: "host"
+    ports:
+    - 4141:4141
+    - 9991:9991
+    volumes:
+    - ./linkerd2.yml:/io.buoyant/linkerd/config.yml:ro
+    - ./disco:/disco:ro
+    command:
+    - "/io.buoyant/linkerd/config.yml"
+
+  influxdb:
+    image: influxdb:1.2.2
+    network_mode: "host"
+    ports:
+    - 8083:8083
+    - 8086:8086
+
+  telegraf:
+    image: telegraf:1.2.1
+    network_mode: "host"
+    ports:
+    - 8092:8092
+    - 8094:8094
+    volumes:
+    - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+
+  grafana:
+    image: grafana/grafana:3.1.1
+    network_mode: "host"
+    ports:
+    - 3000:3000
+    volumes:
+    - ./grafana.json:/usr/share/grafana/public/dashboards/home.json:ro
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+
+  grafana_bootstrap:
+    image: buoyantio/slow_cooker:1.0.1 # just need any image with curl
+    network_mode: "host"
+    entrypoint: /bin/sh
+    volumes:
+    - ./grafana-bootstrap.sh:/grafana-bootstrap.sh:ro
+    command: >
+      -c '/grafana-bootstrap.sh'
+
+  # sends requests to linkerd1 at 100qps
+  slow_cooker1:
+    image: buoyantio/slow_cooker:1.0.1
+    network_mode: "host"
+    environment:
+    - http_proxy=http://127.0.0.1:4140
+    entrypoint: /bin/sh
+    command: >
+      -c 'sleep 15 && slow_cooker -qps 10 -concurrency 10 -interval 5s http://app/'
+
+  # sends requests to linkerd2 at 200qps
+  slow_cooker2:
+    image: buoyantio/slow_cooker:1.0.1
+    network_mode: "host"
+    environment:
+    - http_proxy=http://127.0.0.1:4141
+    entrypoint: /bin/sh
+    command: >
+      -c 'sleep 15 && slow_cooker -qps 10 -concurrency 20 -interval 5s http://app/'

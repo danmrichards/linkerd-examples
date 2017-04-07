@@ -67,6 +67,14 @@ through linkerd using the http_proxy environment variable. More information:
 
 * [Features: HTTP proxy integration](https://linkerd.io/features/http-proxy/)
 
+## influxdb
+
+* [`influxdb/`](influxdb/)
+
+Sets up a demo environment that configures a viz-like dashboard using linkerd,
+InfluxDB, Telegraf, and Grafana. Provides helpful configuration files and
+dashboards for all components.
+
 ## A Service Mesh for Kubernetes
 
 * [`k8s-daemonset/`](k8s-daemonset/)
