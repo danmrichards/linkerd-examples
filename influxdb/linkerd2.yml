@@ -1,5 +1,5 @@
 admin:
-  port: 9991
+  port: 9990
 
 # use the filesystem namer, read from the local /disco directory
 namers:
@@ -16,7 +16,7 @@ usage:
 routers:
 - protocol: http
   servers:
-  - port: 4141
+  - port: 4140
     ip: 0.0.0.0
   # route 25% of traffic to app1, 75% to app2
   dtab: >-

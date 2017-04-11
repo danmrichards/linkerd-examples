@@ -71,9 +71,10 @@ through linkerd using the http_proxy environment variable. More information:
 
 * [`influxdb/`](influxdb/)
 
-Sets up a demo environment that configures a viz-like dashboard using linkerd,
-InfluxDB, Telegraf, and Grafana. Provides helpful configuration files and
-dashboards for all components.
+Sets up a demo environment that configures a
+[linkerd-viz](https://github.com/linkerd/linkerd-viz)-like dashboard using
+linkerd, Telegraf, InfluxDB, and Grafana. Provides helpful configuration files
+and dashboards for all components.
 
 ## A Service Mesh for Kubernetes
 

@@ -32,12 +32,12 @@ front-to-back with respect to the data pipeline:
 * **grafana**: A [Grafana](https://grafana.com/) instance, serving its UI on
 port 3000, surfacing metrics from influxdb. The Docker environment also boots
 a `grafana_bootstrap` container, to configure Grafana at runtime to connect to
-InfluxDB
+InfluxDB.
 
 * **influxdb**: An [InfluxDB](https://influxdata.com/) instance, configuring to
 receive metrics from Telegraf and serve metrics to Grafana.
 
-* **telegraf**: An [Telegraf](https://github.com/influxdata/telegraf) instance,
+* **telegraf**: A [Telegraf](https://github.com/influxdata/telegraf) instance,
 configuring to collect metrics from each linkerd, and send them to influxdb.
 
 * **apps**: Four app instances, grouped two each as app1 and app2. The app
@@ -47,7 +47,8 @@ levels or latency and success rate.
 
 * **linkerd**: Two linkerd instances, both configured to route requests to the
 app services. The linkerd instances vary in the distribution of traffic between
-app1 and app2, defined in their dtabs in [`linkerd1.yml`] and [`linkerd2.yml`].
+app1 and app2, defined in their dtabs in [`linkerd1.yml`](linkerd1.yml) and
+[`linkerd2.yml`](linkerd2.yml).
 
 * **slow_cooker**: Two [slow\_cooker](https://github.com/BuoyantIO/slow_cooker)
 instances, slow_cooker1 and slow_cooker2, generate load on linkerd1 and
